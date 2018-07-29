@@ -1,0 +1,232 @@
+<section>
+
+    <section>
+        <h2>NodeJS</h2>
+    </section>
+
+    <section>
+        <h3>Historique</h3>
+        <div class="container">
+            <div class="col">
+                <ul>
+                    <li>Créé en 2009 par Ryan Dahl</li>
+                    <li>Open Source</li>
+                    <li>Event-driven</li>
+                    <li>Asynchrone</li>
+                </ul>
+            </div>
+            <div class="col">
+                <img src="assets/images/ryan_dahl.jpg" alt="Ryan Dahl">
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Support de l'ES2015</h3>
+        <p>Les versions récentes de NodeJS (à partir de la version 6) supportent la majorité des fonctionnalités liées à l'ES2015 :</p>
+        <ul>
+            <li>const / let</li>
+            <li>Arrow functions</li>
+            <li>class</li>
+            <li>for...of loop</li>
+            <li>Spread operator</li>
+            <li><del>import / export</del> (utiliser require)</li>
+        </ul>
+        <footer>
+            <a href="https://node.green" class="info" target="_blank">Tableau des fonctionnalités supportées</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Command Line Interface (CLI)</h3>
+        <p>NodeJS dispose d'une commande <code class="language-bash">node</code> permettant de démarrer un serveur NodeJS.</p>
+        <p>Si cette commande est appelée sans paramètre, une invite de commande s'ouvre dans laquelle il est possible d'écrire du code JavaScript :</p>
+        <pre><code class="language-bash">node
+> new Date()
+2018-07-29T08:52:37.359Z
+</code></pre>
+        <footer>
+            <a href="https://nodejs.org/api/cli.html" class="info" target="_blank">CLI documentation</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Variable globale process</h3>
+        <p>Node dispose d'une variable globale <code class="language-bash">process</code> permettant d'accéder à différentes informations du processus en cours d'éxecution.</p>
+        <p>Cette variable est l'équivalent de la variable <code class="language-bash">window</code> côté navigateur.</p>
+        <pre><code class="language-bash">node
+> process.pid
+11918
+</code></pre>
+        <p>Les variables globales d'une application pourront être définies et accessible via <code class="language-bash">process.env.*</code>.</p>
+    </section>
+
+    <section>
+        <h3>Premier script</h3>
+        <p>Créez un fichier app.js et saisissez le code suivant :</p>
+        <pre id="hello-world"><code class="language-js">setTimeout(function() {
+    console.log('world');
+}, 2000);
+
+console.log('hello');</code></pre>
+        <p>Executez ensuite ce script :</p>
+        <pre><code class="language-bash">node app.js</code></pre>
+    </section>
+
+    <section>
+        <h3>Paramètres de la commande</h3>
+        <p>Il est possible de récupérer les paramètres passés à la commande node dans la variable globale <code class="language-js">process.argv</code> :</p>
+        <pre><code class="language-js">console.log(process.argv)</code></pre>
+        <pre><code class="language-bash">node app.js one two three</code></pre>
+        <div class="instructions">
+            <ol>
+                <li>Utilisez un argument pour permettre à l'utilisateur d'afficher le message "Hello John"</li>
+            </ol>
+        </div>
+    </section>
+
+    <section>
+        <h3>Prompt</h3>
+        <p>Il est également possible de demander à l'utilisateur d'effectuer une saisie dans la console en utilisant le module <strong>readline</strong> :</p>
+<pre><code class="language-js">const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+rl.question('Quel est votre prénom ?\n', (firstname) => {
+  console.log(`Bonjour ${firstname}`);
+  rl.close();
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Fin du script</h3>
+        <p>Tant que la stack de l'Event loop contient des traitements à réaliser, le programme continue de s'éxécuter :</p>
+<pre><code class="language-js">setInterval(function() {
+    console.log('world');
+}, 1000);
+
+console.log('hello');</code></pre>
+    </section>
+
+    <section>
+        <h3>Serveur HTTP</h3>
+        <p>Le module <strong>http</strong> de NodeJS permet de créer un serveur HTTP :</p>
+        <pre><code class="language-js">const http = require('http');
+
+var server = http.createServer(function(req, res) {
+    res.writeHead(200, { 'Content-type': 'text/plain' });
+    res.end('Hello world\n');
+});
+
+server.listen(8000);</code></pre>
+        <p><code class="language-js">req</code> contient la requête HTTP et <code class="language-js">res</code> la réponse.</p>
+        <pre><code class="language-bash">curl -i http://localhost:8000</code></pre>
+    </section>
+
+    <section>
+        <h3>Chunked response</h3>
+        <p>NodeJS permet par défaut de retourner des données en plusieurs étapes. Cette fonctionnalité peut être utile pour par exemple effectuer un streaming d'une vidéo :</p>
+        <pre><code class="language-js">const http = require('http');
+
+var server = http.createServer(function(req, res) {
+    res.writeHead(200, { 'Content-type': 'text/plain' });
+    res.write('hello\n');
+    setTimeout(function() {
+        res.end('world\n');
+    }, 1000);
+});
+
+server.listen(8000);</code></pre>
+    </section>
+
+    <section>
+        <h3>Benchmark</h3>
+        <p>Nous allons maintenant analyser les performances de notre serveur HTTP en envoyant 100 requêtes en parallèle.</p>
+        <p>Pour cela, nous pouvons utiliser <a href="https://httpd.apache.org/docs/2.4/programs/ab.html">Apache Benchmark</a> ou encore un package NPM :</p>
+        <pre><code class="language-bash">npm install -g loadtest
+loadtest -n 100 -c 100 http://localhost:8000</code></pre>
+        <p>Le serveur devrait retourner l'ensemble des réponses en ~2s ce qui signifie que chaque requête ne bloquait pas l'exécution du serveur (grâce à l'Event loop).</p>
+    </section>
+
+    <section>
+        <h3>Nodemon</h3>
+        <p>Afin d'éviter de devoir stopper puis redémarrer le serveur NodeJS à chaque modification, nous pouvons installer le package <strong>nodemon</strong> :</p>
+        <pre><code class="language-bash">npm init
+npm install --save-dev nodemon
+./node_modules/.bin/nodemon app.js</code></pre>
+        <p>Nous pouvons également ajouter un script dans le fichier package.json pour simplifier cette dernière opération :</p>
+        <pre><code class="language-json">"scripts": {
+    "start": "./node_modules/.bin/nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+},</code></pre>
+        <p>Vous pouvez maintenant utiliser la commande <code class="language-bash">npm start</code> pour démarrer le serveur.</p>
+    </section>
+
+    <section>
+        <h3>Modules</h3>
+        <p>Pour le moment, NodeJS ne supporte pas la syntaxe ES2015 import/export pour la gestion des modules.</p>
+        <p>NodeJS respecte pour le moment la syntaxe CommonJS.</p>
+        <p>Cette syntaxe ne permet d'exporter qu'un seul objet.</p>
+        <pre><code class="language-js">// hello.js
+module.exports = class Hello {
+    constructor(name) {
+        this.name = name;
+    }
+    say() {
+        console.log(`Hello ${this.name}`);
+    }
+}
+
+// app.js
+const Hello = require('./hello.js');
+
+let hello = new Hello('John');
+hello.say();
+</code></pre>
+    </section>
+
+    <section>
+        <h3>HTTP GET</h3>
+        <p>Le module <strong>http</strong> permet d'effectuer des requêtes HTTP :</p>
+        <pre><code class="language-js">const https = require('https');
+
+https.get('https://jsonplaceholder.typicode.com/posts/1', function(res) {
+    let data = '';
+    res.on('data', function(chunk) {
+       data += chunk;
+    });
+    res.on('end', function() {
+        const post = JSON.parse(data);
+        console.log(post.title, post.body);
+    });
+}).on('error', function(error) {
+    console.log('error: ', error);
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>TP</h3>
+        <p>A partir des slides précédentes, créez une application dans la console permettant d'afficher les stats d'un repo GitHub (URL : <a href="https://developer.github.com/v3/repos/#get">https://api.github.com/repos/:owner/:repo</a>).</p>
+        <div class="instructions">
+            <ol>
+                <li>Au démarrage, l'application demande à l'utilisateur un username GitHub</li>
+                <li>Ensuite, l'application affiche l'ensemble des repos de l'utilisateur</li>
+                <li>Il est alors possible de taper le nom d'un des repos ce qui affichera alors des stats (nombre d'étoiles, de followers et de forks)</li>
+                <li>Il sera également possible de revenir en arrière et de saisir un autre username</li>
+                <li>L'utilisateur pourra également quitter l'application en saisissant "exit"</li>
+            </ol>
+        </div>
+    </section>
+
+
+
+    <section>
+        A common application level tool is dotenv which allows us to load environment variables from a file named .env. Install it via:
+
+        npm install dotenv --save
+    </section>
+
+</section>

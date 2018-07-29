@@ -1,0 +1,54 @@
+<section>
+
+    <section>
+        <h2>Event Loop</h2>
+    </section>
+
+    <section>
+        <h3>libuv (Unicorn Velociraptor Library)</h3>
+        <div class="container">
+            <div class="col">
+                <p>libuv est une librairie multi-plateformes écrite en C et permettant de gérer la partie asynchrone de NodeJS.</p>
+                <p>Cette librairie a été développée pour le projet NodeJS mais elle est maintenant utilisée dans d'autres projets.</p>
+            </div>
+            <div class="col">
+                <img src="assets/images/libuv.png" alt="libuv">
+            </div>
+        </div>
+        <footer>
+            <a href="http://libuv.org" class="info" target="_blank">libuv.org</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Event loop</h3>
+        <ul>
+            <li>Single thread</li>
+            <li>Single stack</li>
+            <li>LIFO (Last In First Out)</li>
+            <li>IDLE not paused</li>
+        </ul>
+        <img src="assets/images/eventloop.png" alt="Event loop">
+    </section>
+
+    <section>
+        <h3>Single thread</h3>
+        <p>Contrairement à d'autres langages tel que le Java ou le C#, NodeJS n'est pas conçu pour supporter le multithreading.</p>
+        <p>Cependant, le système d'event loop permet dans certains cas d'obtenir de meilleurs performances.</p>
+        <img src="assets/images/singlethreaded.png" alt="Single Threaded">
+        <footer>
+            <a href="https://nodejs.org/api/child_process.html" class="info" style="font-size: 0.7em;" target="_blank">NodeJS permet cependant de créer plusieurs thread grâce au module <strong>child_process</strong></a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Tâches bloquantes</h3>
+        <p>Si une tâche n'implique <strong>pas de traitement lourd</strong> comme par exemple écrire dans un fichier ou rechercher des données en base de données, <strong>Event loop</strong> va réaliser le traitement.</p>
+        <p>Cependant, s'il s'agit d'un <strong>traitement lourd</strong>, le traitement sera dans ce cas attribué au <strong>Worker pool</strong> et ce fera dans un nouveau thread.</p>
+    </section>
+
+    <section>
+        each iteration of an Event Loop is called a tick.
+    </section>
+
+</section>
