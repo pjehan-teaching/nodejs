@@ -1,0 +1,205 @@
+<section id="webserver">
+
+    <section>
+        <h2>Serveur web HTTP</h2>
+    </section>
+
+    <section>
+        <h3>Création d'un serveur web</h3>
+        <p>Nous allons maintenant utiliser le module <strong>http</strong> pour créer un serveur web. Pour cela, nous allons commencer par créer une classe App qui nous permettra de gérer les routes de notre application :</p>
+<pre class="line-numbers"><code class="language-js">// App.js
+const http = require('http');
+const EventEmitter = require('events');
+
+class App extends EventEmitter {
+    constructor(port) {
+        super();
+        this.server = http.createServer((req, res) => {
+            const cb = this.routes[path];
+            res.writeHead(200, {'Content-type': 'text/plain'});
+            req.write('Hello world!');
+            res.end();
+        });
+        this.server.listen(port);
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Démarrer notre serveur web</h3>
+        <p>Nous pouvons maintenant utiliser cette classe pour démarrer notre serveur web :</p>
+<pre class="line-numbers"><code class="language-js">// index.js
+const App = require('./App.js');
+
+const app = new App(8000);</code></pre>
+    </section>
+
+    <section>
+        <h3>Gestion des routes</h3>
+        <p>Nous allons maintenant ajouter un système pour pouvoir gérer les routes de notre application :</p>
+        <p>Nous allons commencer par ajouter une méthode <code class="language-js">addRoute()</code> dans notre classe App :</p>
+<pre class="line-numbers"><code class="language-js">// App.js
+class App extends EventEmitter {
+    ...
+    addRoute(url, cb) {
+        this.routes[url] = cb;
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Gestion des routes</h3>
+        <p>Puis nous allons utiliser les routes dans notre serveur :</p>
+<pre class="line-numbers"><code class="language-js">// App.js
+const url = require('url');
+
+class App extends EventEmitter {
+
+    constructor(port) {
+        super();
+        this.routes = [];
+        this.server = http.createServer((req, res) => {
+            const path = url.parse(req.url).pathname;
+            const cb = this.routes[path];
+            res.writeHead(200, {'Content-type': 'text/plain'});
+            cb(req, res);
+            res.end();
+        });
+        this.server.listen(port);
+    }
+
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Utilisation des routes</h3>
+        <p>Nous pouvons maintenant utiliser nos routes de la façon suivante :</p>
+<pre class="line-numbers"><code class="language-js">// index.js
+
+app.addRoute('/', function(req, res) {
+    res.write('Homepage');
+});
+
+app.addRoute('/contact', function(req, res) {
+    res.write('Contact');
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Gestion des 404</h3>
+        <p>Pour pouvoir gérer les erreurs 404, nous allons déclencher un événement lorsque qu'aucune route ne correspondra à l'URL de la requête :</p>
+<pre class="line-numbers"><code class="language-js">// App.js
+if(path in this.routes) {
+    const cb = this.routes[path];
+    res.writeHead(200, {'Content-type': 'text/plain'});
+    cb(req, res);
+} else {
+    this.notFound(req, res);
+}
+
+notFound(req, res) {
+    res.writeHead(404);
+    this.emit('404', req, res);
+    res.end();
+}</code></pre>
+<pre class="line-numbers"><code class="language-js">// index.js
+app.on('404', function(req, res) {
+    res.write('Erreur 404');
+});</code></pre>
+    </section>
+    
+    <section>
+        <h3>Gestion des vues</h3>
+        <p>Pour améliorer notre serveur web, nous allons maintenant ajouter la possibilité de retourner le code contenu dans un fichier HTML.</p>
+        <p>Pour cela, nous allons utiliser le module <strong>fs</strong> (File System) de NodeJS :</p>
+<pre class="line-numbers" data-line="6-18"><code class="language-js">// App.js
+const fs = require('fs');
+
+class App extends EventEmitter {
+    ...
+    render(req, res, filename, variables) {
+        fs.readFile(`views/${filename}`, 'utf8', (err, data) => {
+            if (err) {
+                res.writeHead(500);
+                res.write(`Failed to open ${filename}`)
+                res.end();
+            } else {
+                for (var variable in variables) {
+                    data = data.replace(`{{ ${variable} }}`, variables[variable]);
+                }
+                res.end(data);
+            }
+        });
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Gestion des vues</h3>
+<pre class="line-numbers" data-line="4"><code class="language-js">// App.js
+const cb = this.routes[path];
+res.writeHead(200, {'Content-type': 'text/html; charset=utf-8'});
+res.render = (filename, variables) => this.render(req, res, filename, variables);
+cb(req, res);</code></pre>
+<pre class="line-numbers"><code class="language-js">// index.js
+app.addRoute('/', function(req, res) {
+    res.render('index.html', {username: 'pjehan'});
+});</code></pre>
+        <p>Créez ensuite un dossier "views" contenant un fichier index.html et affichez des variables en utilisant la syntaxe <code class="language-js">{{ }}.</code></p>
+    </section>
+
+    <section>
+        <h3>Gestion des fichiers statiques</h3>
+        <p>Actuellement, il n'est pas possible de gérer l'affichage d'images, de vidéos, l'appel d'un fichier CSS... car aucune route ne correspond à ces fichiers.</p>
+        <p>Nous allons donc définir dans notre serveur HTTP un dossier qui contiendra l'ensemble des fichiers statiques de notre application.</p>
+        <div class="instructions">
+            <ol>
+                <li>Créez un dossier "public" et ajouter à l'intérieur des fichiers statiques (images, css, js...)</li>
+                <li>Faites appel à ces fichiers depuis votre page HTML</li>
+            </ol>
+        </div>
+    </section>
+
+    <section>
+        <h3>Gestion des fichiers statiques</h3>
+        <p>Ajoutez maintenant la gestion de ces fichiers statiques dans le fichier App.js :</p>
+<pre class="line-numbers" data-line="2,7-12"><code class="language-js">// App.js
+const path = require('path');
+
+class App extends EventEmitter {
+
+    const path = url.parse(req.url).pathname;
+    if(this.staticDir && path.startsWith(this.staticDir)) {
+        fs.readFile(path.join(__dirname, path), function(err, data) {
+            res.writeHead(200);
+            res.end(data, 'utf-8');
+        });
+    } else {
+        if(path in this.routes) {
+            ...
+
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Gestion des fichiers statiques</h3>
+        <p>Enfin, définissez votre dossier statique dans le fichier index.js :</p>
+<pre class="line-numbers" data-line="5"><code class="language-js">// App.js
+const App = require('./App.js');
+
+const app = new App(8000);
+app.setStaticDir('/public');</code></pre>
+    </section>
+
+    <section>
+        <h3>Gestion des fichiers statiques</h3>
+        <p>Actuellement, le <strong>Content-type</strong> des fichiers statiques retournés n'est pas défini.</p>
+        <div class="instructions">
+            <ol>
+                <li>Importez le package <a href="https://www.npmjs.com/package/mime-types" target="_blank">mime-types</a> dans votre projet</li>
+                <li>Utilisez ce package pour définir le <strong>Content-type</strong> des fichiers statiques</li>
+            </ol>
+        </div>
+    </section>
+
+</section>

@@ -1,0 +1,54 @@
+<section id="events">
+
+    <section>
+        <h2>Les événements</h2>
+    </section>
+
+    <section>
+        <h3>La classe EventEmmiter</h3>
+        <p>La classe EventEmmiter contenu dans le module <strong>events</strong> permet de gérer des événements.</p>
+        <p>Elle est utilisée dans de nombreux modules de NodeJS par exemple lorsque l'on souhaite écouter les connections à un serveur :</p>
+<pre class="line-numbers"><code class="language-js">const server = http.createServer();
+server.on('request', ...)</code></pre>
+    </section>
+
+    <section>
+        <h3>Créer un EventEmiter</h3>
+        <p>Il est possible de créer des EventEmmiter en instanciant cette classe :</p>
+<pre class="line-numbers"><code class="language-js">const EventEmitter = require('events');
+
+const app = new EventEmitter();
+
+app.on('start', function() {
+  console.log('Démarrage de l\'application');
+});
+
+app.emit('start');</code></pre>
+    </section>
+
+    <section>
+        <h3>Passer des arguments</h3>
+        <p>Il est également possible de passer des arguments en paramètre d'un événement :</p>
+<pre class="line-numbers"><code class="language-js">const EventEmitter = require('events');
+
+const app = new EventEmitter();
+
+app.on('start', function(port) {
+  console.log('Démarrage de l\'application sur le port ' + port);
+});
+
+app.emit('start', 3000);</code></pre>
+    </section>
+
+    <section>
+        <h3>Exécution asynchrone</h3>
+        <p>Afin de s'assurer que les événements soient déclenchés dans le bon ordre, leur exécution est synchrone.</p>
+        <p>Il est cependant possible d'exécuter du code asynchrone dans la fonction de callback d'un événement :</p>
+<pre class="line-numbers"><code class="language-js">app.on('start', function(port) {
+  setImmediate(function() {
+    console.log('Démarrage de l\'application en asynchrone');
+  });
+});</code></pre>
+    </section>
+
+</section>

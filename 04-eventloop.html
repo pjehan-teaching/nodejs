@@ -48,7 +48,30 @@
     </section>
 
     <section>
-        each iteration of an Event Loop is called a tick.
+        <h3>Etapes de l'event loop</h3>
+        <ol>
+            <li><strong>timers</strong> : Execute les callbacks des fonctions <code class="language-js">setTimeout()</code> ou <code class="language-js">setInterval()</code></li>
+            <li><strong>pending callbacks</strong> : Execute les callbacks d'I/O</li>
+            <li><strong>poll</strong> : Execute les fonctions synchrones</li>
+            <li><strong>check</strong> : Execute les callbacks de la fonction <code class="language-js">setImmediate()</code></li>
+            <li><strong>close callbacks</strong> : Execute les callbacks de fermeture (par exemple <code class="language-js">socket.on('close', ...)</code>)</li>
+        </ol>
+        <p>L'ensemble de ces étapes est un "<strong>Tick</strong>".</p>
+        <footer>
+            <a href="https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick" class="info" target="_blank">NodeJS Event Loop</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Event loop tick</h3>
+        <p>Un "tick" correspond à un cycle d'éxecution dans l'event loop.</p>
+        <p>Plusieurs méthodes peuvent être utilisées pour ajouter des fonctions dans l'event loop :</p>
+        <ul>
+            <li><code class="language-js">setTimeout()</code> : Au début de l'event loop</li>
+            <li><code class="language-js">setImmediate()</code> : A la fin de l'event loop</li>
+            <li><code class="language-js">process.nextTick()</code> : Avant de recommencer l'event loop</li>
+        </ul>
+        <p>Dans la pluspart des cas, il est recommandé d'utiliser <code class="language-js">setImmediate()</code>.</p>
     </section>
 
 </section>
