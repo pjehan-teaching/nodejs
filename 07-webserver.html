@@ -59,8 +59,8 @@ class App extends EventEmitter {
         super();
         this.routes = [];
         this.server = http.createServer((req, res) => {
-            const path = url.parse(req.url).pathname;
-            const cb = this.routes[path];
+            const { pathname } = url.parse(req.url);
+            const cb = this.routes[pathname];
             res.writeHead(200, {'Content-type': 'text/plain'});
             cb(req, res);
             res.end();
@@ -89,8 +89,8 @@ app.addRoute('/contact', function(req, res) {
         <h3>Gestion des 404</h3>
         <p>Pour pouvoir gérer les erreurs 404, nous allons déclencher un événement lorsque qu'aucune route ne correspondra à l'URL de la requête :</p>
 <pre class="line-numbers"><code class="language-js">// App.js
-if(path in this.routes) {
-    const cb = this.routes[path];
+if(pathname in this.routes) {
+    const cb = this.routes[pathname];
     res.writeHead(200, {'Content-type': 'text/plain'});
     cb(req, res);
 } else {
@@ -137,7 +137,7 @@ class App extends EventEmitter {
     <section>
         <h3>Gestion des vues</h3>
 <pre class="line-numbers" data-line="4"><code class="language-js">// App.js
-const cb = this.routes[path];
+const cb = this.routes[pathname];
 res.writeHead(200, {'Content-type': 'text/html; charset=utf-8'});
 res.render = (filename, variables) => this.render(req, res, filename, variables);
 cb(req, res);</code></pre>
@@ -146,6 +146,19 @@ app.addRoute('/', function(req, res) {
     res.render('index.html', {username: 'pjehan'});
 });</code></pre>
         <p>Créez ensuite un dossier "views" contenant un fichier index.html et affichez des variables en utilisant la syntaxe <code class="language-js">{{ }}.</code></p>
+    </section>
+
+    <section>
+        <h3>Les paramètres dans l'URL</h3>
+        <p>Pour gérer les paramètres dans les URLs, nous allons pouvoir récupérer les données de l'objet <strong>query</strong> retourné par la fonction <code class="language-js">url.parse()</code> :</p>
+        <pre><code class="language-js">const { pathname, query } = url.parse(req.url);</code></pre>
+        <div class="instructions">
+            <ol>
+                <li>Récupérez le paramètre username dans l'URL</li>
+                <li>Affichez sa valeur sur la page web</li>
+                <li>Gérez le cas où ce paramètre n'est pas défini</li>
+            </ol>
+        </div>
     </section>
 
     <section>
@@ -168,14 +181,14 @@ const path = require('path');
 
 class App extends EventEmitter {
 
-    const path = url.parse(req.url).pathname;
+    const { pathname } = url.parse(req.url);
     if(this.staticDir && path.startsWith(this.staticDir)) {
         fs.readFile(path.join(__dirname, path), function(err, data) {
             res.writeHead(200);
             res.end(data, 'utf-8');
         });
     } else {
-        if(path in this.routes) {
+        if(pathname in this.routes) {
             ...
 
 }</code></pre>

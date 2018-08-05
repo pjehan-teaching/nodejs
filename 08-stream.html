@@ -1,0 +1,122 @@
+<section id="stream">
+
+    <section>
+        <h2>Les streams</h2>
+    </section>
+
+    <section>
+        <h3>Les streams</h3>
+        <p>Les streams permettent d'effectuer des traitements sur des <strong>fichiers volumineux</strong> sans surcharger la mémoire. Pour cela, ils traitent les fichiers <strong>par morceaux</strong> (chunks).</p>
+        <p>On peut distinguer 2 principaux type de streams :</p>
+        <div class="container">
+            <div class="col">
+                <h4>Lecture</h4>
+                <ul>
+                    <li>HTTP request</li>
+                    <li>fs.createReadStream()</li>
+                    <li>process.stdin()</li>
+                    <li>...</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>Ecriture</h4>
+                <ul>
+                    <li>HTTP response</li>
+                    <li>fs.createWriteStream()</li>
+                    <li>process.stdout()</li>
+                    <li>...</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Copier un fichier</h3>
+        <p>Dans un premier temps, nous allons créer un programme pour copier un fichier.</p>
+        <p>Nous allons donc lire le fichier puis créer un nouveau fichier en utilisant <code class="language-js">fs.readFile()</code> et <code class="language-js">fs.writeFile()</code> :</p>
+        <pre class="line-numbers"><code class="language-js">const fs = require('fs');
+
+fs.readFile('file.avi', (err, data) => {
+    if (err) throw (err)
+    fs.writeFile('file2.avi', data, err => {
+        if (err) throw (err)
+        console.log('End of copy');
+    });
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Copier un fichier</h3>
+        <p>Si l'on execute le programme précédent avec un fichier ayant une taille de 1.6Go, voici ce qui se produit :</p>
+        <img src="assets/images/stream1.gif" alt="Stream">
+        <p>L'ensemble du fichier est chargé en mémoire afin de pouvoir effectuer la copie et presque 20% de la mémoire est utilisé.</p>
+    </section>
+
+    <section>
+        <h3>Copier un fichier</h3>
+        <p>Pour résoudre ce problème, nous allons utiliser les streams du module fs :</p>
+        <pre class="line-numbers"><code class="language-js">const fs = require('fs');
+
+const readStream = fs.createReadStream('file.avi');
+const writeStream = fs.createWriteStream('file2.avi');
+
+readStream.pipe(writeStream);
+writeStream.on('finish', () => console.log('End of copy'));</code></pre>
+        <p>Ici, nous créons 2 streams (lecture et écriture) et réalisons un lien entre eux avec la fonction <code class="language-js">pipe()</code>.</p>
+    </section>
+
+    <section>
+        <h3>Copier un fichier</h3>
+        <p>A présent, moins de 2% de la mémoire est utilisé et la vitesse de traitement reste la même.</p>
+        <img src="assets/images/stream2.gif" alt="Stream">
+    </section>
+
+    <section>
+        <h3>Copier un fichier</h3>
+        <p>Nous pouvons également écouter l'avancement pour afficher le pourcentage :</p>
+        <pre class="line-numbers" data-line="3-4,8-12,18"><code class="language-js">const fs = require('fs');
+
+fs.stat('file.avi', (err, stat) => {
+    const { size } = stat;
+    const readStream = fs.createReadStream('file.avi');
+    const writeStream = fs.createWriteStream('file2.avi');
+
+    let progress = 0;
+    readStream.on('data', chunk => {
+        progress += chunk.length;
+        console.log(Math.round((progress / size) * 100) + "%");
+    });
+
+    readStream.pipe(writeStream);
+    writeStream.on('finish', () => {
+        console.log('End of copy');
+    });
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Effectuer du streaming vidéo</h3>
+        <p>Afin de pouvoir effectuer du streaming vidéo, nous allons devoir retourner un header HTTP de ce type :</p>
+        <pre><code class="language-text">Status Code: 206 Partial Content
+Accept-Ranges: bytes
+Content-Length: 20801072
+Content-Range: bytes 5668864-26469935/26469936
+Content-Type: video/mp4</code></pre>
+        <p>Le header <strong>Content-Range</strong> indique en bytes : [debut]-[fin]/[total]</p>
+        <p>Vous pouvez récupérer dans la requête des informations sur la taille des données à retourner :</p>
+        <pre><code class="language-js">const range = req.headers.range;</code></pre>
+    </section>
+
+    <section>
+        <h3>Effectuer du streaming vidéo</h3>
+        <p>Actuellement, si nous affichons une vidéo sur notre page web, <strong>l'intégralité du fichier sera chargé</strong> en mémoire pour ensuite être envoyé au navigateur.</p>
+        <p>De plus, le player HTML du navigateur ne permettra pas de <strong>se déplacer</strong> dans la lecture de la vidéo.</p>
+        <p>Pour résoudre ce problème, nous allons donc utiliser un système de <strong>stream</strong>.</p>
+        <div class="instructions">
+            <ol>
+                <li>Modifiez le code de notre serveur HTTP pour permettre d'effectuer un streaming vidéo</li>
+            </ol>
+        </div>
+    </section>
+
+</section>
