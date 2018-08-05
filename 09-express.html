@@ -1,0 +1,183 @@
+<section id="express">
+
+    <section>
+        <h2>Express</h2>
+    </section>
+
+    <section>
+        <h2>Introduction</h2>
+        <div class="container">
+            <div class="col">
+                <p>Express est un <strong>framework HTTP</strong> permettant de faciliter la création d'un serveur web.</p>
+                <p>Il s'agit d'un framework "lite" ne comprenant que les <strong>fonctionnalités basiques</strong> d'un framework web (routing, fichiers statiques, middlewares, ...).</p>
+            </div>
+            <div class="col">
+                <img src="assets/images/express.png" alt="Express">
+            </div>
+        </div>
+        <footer>
+            <a href="https://expressjs.com" class="info" target="_blank">ExpressJS</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Mise en place du projet</h3>
+        <p>Express dispose d'un <strong>générateur</strong> (<a href="https://expressjs.com/en/starter/generator.html">express-generator</a>) permettant de générer une structure de projet.</p>
+        <p>Cependant, nous n'allons pas l'utiliser afin de construire <strong>étape par étape</strong> notre application web.</p>
+        <p>Pour ce cours, nous allons utiliser un <strong>projet fil rouge</strong> : SocialQuiz</p>
+        <p>L'objectif sera de créer une application web permettant aux internautes de créer des quiz catégorisés de façon collaborative.</p>
+    </section>
+
+    <section>
+        <h3>Installation</h3>
+        <p>Créez un dossier socialquiz et positionnez-vous dans ce dossier depuis votre terminal.</p>
+        <p>Créer ensuite un nouveau projet NPM :</p>
+        <pre><code class="language-bash">npm init</code></pre>
+        <p>Créez ensuite un fichier app.js qui sera le point d'entrée de notre application.</p>
+        <p>Installez ensuite Express avec la commande suivante :</p>
+        <pre><code class="language-bash">npm install --save express</code></pre>
+        <p>Installez ensuite Nodemon pour simplifier le développement de notre application.</p>
+    </section>
+
+    <section>
+        <h3>Utilisation de Express</h3>
+        <p>Nous allons maintenant importer le module <strong>express</strong> et l'utiliser pour créer notre serveur web :</p>
+        <pre class="line-numbers"><code class="language-js">const express = require('express');
+
+const app = express();
+
+app.get('/', (req, res) => {
+    res.send('Hello world!');
+});
+
+app.listen(8000);</code></pre>
+    </section>
+
+    <section>
+        <h3>Moteur de template</h3>
+        <p>Par défaut, <strong>aucun moteur de template</strong> n'est installé. Cependant, il est possible d'ajouter un moteur de template à Express.</p>
+        <p>Express supporte plusieurs moteurs de template (Pug, Mustache, EJS...) mais celui recommandé dans la documentation est <strong>Pug</strong> (anciennement Jade).</p>
+        <p>Nous allons donc ajouer le moteur de template Pug dans nos dépendances :</p>
+        <pre><code class="language-bash">npm install --save pug</code></pre>
+        <footer>
+            <a href="https://expressjs.com/en/guide/using-template-engines.html" class="info" target="_blank">Moteur de template</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Pug</h3>
+        <p>Nous allons maintenant activer le moteur de template dans Express :</p>
+        <pre><code class="language-js">app.set('view engine', 'pug');</code></pre>
+        <p>Nous allons maintenant utiliser la fonction <code class="language-js">render()</code> pour retourner un fichier .pug :</p>
+        <pre><code class="language-js">res.render('index', { username: 'johndoe' });</code></pre>
+        <p>Créez ensuite un fichier index.pug dans un nouveau dossier nommé "views".</p>
+        <footer>
+            <a href="#" class="warning" style="font-size: 0.7em">Il est possible de modifier le dossier contenant les vues avec la fonction app.set('views', ...)</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Pug</h3>
+        <p>Le moteur de template Pug utilise l'indentation pour organiser le code HTML (pas de balises).</p>
+        <p>Ajoutez le code suivant dans le fichier index.pug :</p>
+        <pre class="line-numbers"><code class="language-pug">// index.pug
+doctype html
+html
+    head
+        title SocialQuiz
+    body
+        h1= username
+</code></pre>
+        <footer>
+            <a href="https://pugjs.org" class="info" target="_blank">Documentation de Pug</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Pug - héritage</h3>
+        <p>Pug permet d'effectuer de l'héritage dans les templates. Cela permet d'éviter de répéter le même code sur l'ensemble des pages :</p>
+        <pre class="line-numbers" data-line="7"><code class="language-pug">// layout.pug
+doctype html
+html
+    head
+        title SocialQuiz
+    body
+        block content
+</code></pre>
+        <pre class="line-numbers" data-line="2,4"><code class="language-pug">// index.pug
+extends layout.pug
+
+block content
+    h1= username
+</code></pre>
+    </section>
+
+    <section>
+        <h3>Pug - variables</h3>
+        <p>Il est possible d'afficher des variables dans un template pug de plusieurs façon. Nous avons déjà affiché le nom de l'utilisateur dans la variable h1 : <code class="language-pug">h1= username</code>.</p>
+        <p>Nous allons maintenant afficher le titre de la page dans la balise <strong>title</strong> :</p>
+        <pre class="line-numbers" data-line="5"><code class="language-pug">// layout.pug
+doctype html
+html
+    head
+        title SocialQuiz - #{title}
+    body
+        block content</code></pre>
+        <p>Ajoutez ensuite un nouveau paramètre dans la fonction <code class="language-js">render()</code> dans le fichier app.js</p>
+    </section>
+
+    <section>
+        <h3>Gestion des assets</h3>
+        <p>Nous allons à présent ajouter une feuille CSS à notre projet.</p>
+        <p>Créez un nouveau dossier <strong>public/css</strong> puis ajouter un nouveau fichier <strong>style.css</strong> à l'intérieur avec le code suivant :</p>
+        <pre class="line-numbers" style="height: 100px; overflow: auto;"><code class="language-css">/* style.css */
+:root {
+    --main-bg-color: #ccc;
+}
+
+body {
+    background-color: var(--main-bg-color);
+}</code></pre>
+        <p>Ajoutez ensuite une balise link dans le header du site :</p>
+        <pre class="line-numbers" data-line="5"><code class="language-pug">// layout.pug
+doctype html
+html
+    head
+        title SocialQuiz - #{title}
+        link(rel='stylesheet', href='/css/style.css')
+    body
+        block content</code></pre>
+    </section>
+
+    <section>
+        <h3>Gestion des assets</h3>
+        <p>Malheureusement, le chargement du fichier CSS ne fonctionne pas. Etant donné qu'il s'agit d'un fichier statique, il faut indiquer à Express de ne pas traiter l'appel de ce fichier comme une route de notre application :</p>
+        <pre><code class="language-js">app.use(express.static('public'));</code></pre>
+        <p>Nous pouvons également définir une route général pour l'ensemble de nos assets afin d'éviter les conflits avec nos autres routes :</p>
+        <pre><code class="language-js">app.use('/public', express.static('public'));</code></pre>
+        <pre><code class="language-pug">link(rel='stylesheet', href='/public/css/style.css')</code></pre>
+    </section>
+
+    <section>
+        <h3>Les middlewares</h3>
+        <p>app.use permet d'ajouter un middleware</p>
+    </section>
+
+    <section>
+        <h3>Gestion des formulaires</h3>
+    </section>
+
+    <section>
+        <h3>Gestion des formulaires</h3>
+        <p>body-parser</p>
+    </section>
+
+    <section>
+        <h3>La variable locals</h3>
+    </section>
+
+    <section>
+        <h3>Les sessions</h3>
+    </section>
+
+</section>

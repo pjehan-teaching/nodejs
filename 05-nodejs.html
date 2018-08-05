@@ -57,6 +57,16 @@ console.log('hello');</code></pre>
     </section>
 
     <section>
+        <h3>Fin du script</h3>
+        <p>Tant que la stack de l'Event loop contient des traitements à réaliser, le programme continue de s'éxécuter :</p>
+        <pre class="line-numbers"><code class="language-js">setInterval(function() {
+    console.log('world');
+}, 1000);
+
+console.log('hello');</code></pre>
+    </section>
+
+    <section>
         <h3>Paramètres de la commande</h3>
         <p>Il est possible de récupérer les paramètres passés à la commande node dans la variable globale <code class="language-js">process.argv</code> :</p>
         <pre class="line-numbers"><code class="language-js">console.log(process.argv)</code></pre>
@@ -85,13 +95,11 @@ rl.question('Quel est votre prénom ?\n', (firstname) => {
     </section>
 
     <section>
-        <h3>Fin du script</h3>
-        <p>Tant que la stack de l'Event loop contient des traitements à réaliser, le programme continue de s'éxécuter :</p>
-<pre class="line-numbers"><code class="language-js">setInterval(function() {
-    console.log('world');
-}, 1000);
-
-console.log('hello');</code></pre>
+        <h3>Debugger</h3>
+        <p>Pour debugger votre application, nous pouvez utiliser les fonctionnalités de votre IDE.</p>
+        <p>Il est également possible d'utiliser le débuggeur de Google Chrome. Pour cela démarrez votre programme avec la commande suivante :</p>
+        <pre><code class="language-bash">node --inspect</code></pre>
+        <p>Puis saisissez la ligne suivante dans la barre d'adresse de Google Chrome : <strong>chrome://inspect</strong></p>
     </section>
 
     <section>
@@ -202,14 +210,6 @@ https.get('https://jsonplaceholder.typicode.com/posts/1', function(res) {
                 <li>L'utilisateur pourra également quitter l'application en saisissant "exit"</li>
             </ol>
         </div>
-    </section>
-
-
-
-    <section>
-        A common application level tool is dotenv which allows us to load environment variables from a file named .env. Install it via:
-
-        npm install dotenv --save
     </section>
 
 </section>
