@@ -5,7 +5,65 @@
     </section>
 
     <section>
-        <h3>PassportJS</h3>
+        <h3>Passport</h3>
+        <p>Pour gérer l'authentification des utilisateurs, nous allons utiliser le module <a href="https://www.npmjs.com/package/passport" target="_blank">passport</a>.</p>
+        <pre><code class="language-bash">npm install --save passport passport-local passport-local-mongoose</code></pre>
+        <pre><code class="language-js">const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+app.use(passport.initialize());
+app.use(passport.session());</code></pre>
+    </section>
+
+    <section>
+        <h3>Passport</h3>
+        <p>Nous allons maintenant créer une nouvelle collection User pour gérer nos utilisateurs :</p>
+        <pre><code class="language-js">const mongoose = require('mongoose');
+const passportLocalMongoose = require('passport-local-mongoose');
+
+var UserSchema = new mongoose.Schema({
+    username: String,
+    password: String
+});
+
+UserSchema.plugin(passportLocalMongoose);
+
+module.exports = mongoose.model('User', UserSchema);</code></pre>
+    </section>
+
+    <section>
+        <h3>Passport</h3>
+        <p>Enfin, nous allons effectuer le lien entre notre nouvelle collection et Passport :</p>
+        <pre><code class="language-js">const User = require('./models/User.js');
+
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());</code></pre>
+    </section>
+
+    <section>
+        <h3>Passport</h3>
+        <p>Vous pouvez maintenant utiliser Passport pour effectuer les actions suivantes :</p>
+        <ul>
+            <li>Créer un compte : <code class="language-js">User.register(...)</code></li>
+            <li>Se connecter : <code class="language-js">passport.authenticate(...)</code></li>
+            <li>Se déconnecter : <code class="language-js">req.logout()</code></li>
+            <li>Récupérer l'utilisateur en cours : <code class="language-js">req.user</code></li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Passport</h3>
+        <div class="instructions">
+            <ol>
+                <li>Masquez le formulaire de création d'une question si l'utilisateur n'est pas connecté</li>
+                <li>Créez une page de création de compte</li>
+                <li>Créez une page de login</li>
+                <li>Ajoutez un bouton logout si l'utilisateur est connecté</li>
+                <li>Permettre à un utilisateur connecté d'administrer ses questions (ajouter/supprimer)</li>
+                <li>Créez un compte administrateur ayant accès à l'ensemble des questions et pouvant les supprimer</li>
+            </ol>
+        </div>
     </section>
 
 </section>

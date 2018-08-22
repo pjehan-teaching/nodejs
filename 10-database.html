@@ -4,4 +4,76 @@
         <h2>Base de données</h2>
     </section>
 
+    <section>
+        <h3>Driver NodeJS</h3>
+        <p>Pour utiliser une base de données dans notre application, nous allons commencer par installer un driver.</p>
+        <p>Dans notre cas, nous allons utiliser un driver MongoDB : <a href="https://www.npmjs.com/package/mongodb" target="_blank">mongodb</a></p>
+        <pre><code class="language-js">const MongoClient = require('mongodb').MongoClient;
+
+const url = 'mongodb://localhost:27017';
+const dbName = 'socialquiz';
+
+MongoClient.connect(url, function (err, client) {
+    if (err) throw err;
+    var db = client.db(dbName);
+
+    db.collection('questions').insertOne({ title: 'test', content: 'Lorem ipsum'}, (err, result) => {
+        client.close();
+    });
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Mongoose</h3>
+        <p>Mongoose est un ORM/ODM pour NodeJS. Il va nous permettre d'utiliser la syntaxe objet pour manipuler nos données.</p>
+        <p>Installez le package <a href="https://www.npmjs.com/package/mongoose" target="_blank">mongoose</a> puis ouvrez une connection :</p>
+        <pre><code class="language-js">const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/socialquiz');
+app.locals.db = mongoose.connection;
+
+app.locals.db.once('open', () => {
+    app.listen(8000);
+});
+</code></pre>
+    </section>
+
+    <section>
+        <h3>Mongoose</h3>
+        <p>Nous allons maintenant créer un nouvel objet <strong>Question</strong> :</p>
+        <pre><code class="language-js">// models/Question.js
+const mongoose = require('mongoose');
+
+const questionSchema = new mongoose.Schema({
+    title: String,
+    content: String,
+    image: String
+});
+
+module.exports = mongoose.model('Question', questionSchema);</code></pre>
+    </section>
+
+    <section>
+        <h3>Mongoose</h3>
+        <p>Vous pouvez ensuite enregistrer les données en base de données de cette façon :</p>
+        <pre><code class="language-js">let question = new Question(req.body);
+question.save((err, question) => {
+    if (err) throw err;
+    res.redirect('/');
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Mongoose</h3>
+        <div class="instructions">
+            <ol>
+                <li>Ajoutez une propriété <strong>created_at</strong> sur chaque Document</li>
+                <li>Afficher la liste des dernières questions sur la page d'accueil</li>
+                <li>Ajouter une catégorie et plusieurs tags sur chaque Document</li>
+                <li>Ajouter les champs correspondant dans le formulaire</li>
+                <li>Afficher ces informations dans la liste des questions sur la page d'accueil</li>
+            </ol>
+        </div>
+    </section>
+
 </section>

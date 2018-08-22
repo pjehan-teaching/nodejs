@@ -4,6 +4,73 @@
         <h2>Déploiement</h2>
     </section>
 
+    <section>
+        <h3>Variable d'environnement</h3>
+        <p>Pour éxécuter nos applications en mode "production", il est possible de définir la variable d'environnement <code>NODE_ENV</code> à "production" :</p>
+        <pre><code class="language-bash">env # Afficher les variables d'environnement
+export NODE_ENV=production # Définir la valeur de la variable d'environnement NODE_ENV
+printenv NODE_ENV # Afficher la valeur de la variable d'environnement NODE_ENV</code></pre>
+    </section>
 
+    <section>
+        <h3>Packages</h3>
+        <p>Il est possible d'installer plusieurs packages permettant d'améliorer les performances ou la sécurité de notre application :</p>
+        <ul>
+            <li><a href="https://www.npmjs.com/package/compression" target="_blank">compression</a> : Permet de diminuer la taille des réponses HTTP</li>
+            <li><a href="https://www.npmjs.com/package/helmet" target="_blank">helmet</a> : Permet d'améliorer la sécurité en modifiant des headers HTTP</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Forever</h3>
+        <p>Forever est un <a href="https://www.npmjs.com/package/forever" target="_blank">package NPM</a> permettant de démarrer un serveur NodeJS en continue.</p>
+        <p>Cela permet de s'assurer qu'une application reste toujours disponible et qu'elle redémarrera en cas de crash.</p>
+        <footer>
+            <a href="#" class="info">Il existe d'autres solutions telles que PM2 ou StrongLoop</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Reverse proxy</h3>
+        <p>Afin de permettre d'utiliser un <strong>nom de domaine</strong> pour notre application, il sera nécessaire de mettre en place un <strong>reverse proxy</strong> sur notre serveur.</p>
+        <p>Cette tâche peut être réalisée par un serveur Apache ou Nginx.</p>
+    </section>
+
+    <section>
+        <h3>Reverse proxy Apache</h3>
+        <pre><code class="language-apacheconf"><VirtualHost *:80>
+    ServerName monsite.fr
+    ServerAlias www.monsite.fr
+
+    DocumentRoot /root/monsite
+
+    ProxyPreserveHost On
+
+    ProxyRequests On
+    ProxyPass / http://10.11.12.13:8000/
+    ProxyPassReverse / http://10.11.12.13:8000/
+</VirtualHost></code></pre>
+    </section>
+
+    <section>
+        <h3>Reverse proxy Nginx</h3>
+        <pre><code class="language-nginx">server {
+    listen 80;
+    listen [::]:80;
+
+    root /root/monsite;
+
+    server_name monsite.com www.monsite.com;
+
+    location / {
+        proxy_pass http://10.11.12.13:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}</code></pre>
+    </section>
 
 </section>

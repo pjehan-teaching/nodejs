@@ -160,24 +160,116 @@ html
 
     <section>
         <h3>Les middlewares</h3>
-        <p>app.use permet d'ajouter un middleware</p>
+        <div class="container">
+            <div class="col" style="flex: 2;">
+                <p>Les middlewares sont des fonctions ayant accès aux objets <code class="language-js">req</code> et <code class="language-js">res</code> ainsi qu'à la prochaine fonction qui devra être exécutée : <code class="language-js">next()</code>.</p>
+                <p>Ils peuvent :</p>
+                <ul>
+                    <li>Exécuter du code</li>
+                    <li>Modifier les objets <code class="language-js">req</code> et <code class="language-js">res</code></li>
+                    <li>Terminer un requête</li>
+                    <li>Appeler le middleware suivant</li>
+                </ul>
+            </div>
+            <div class="col">
+                <img src="assets/images/middlewares.png" alt="Middlewares">
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Les middlewares</h3>
+        <p>Les middlewares peuvent être appelés via la fonction <code class="language-js">app.use()</code> ou bien pour un type de requête spécifique avec <code class="language-js">app.METHOD()</code> (où METHOD peut être "get", "post", "put"...).</p>
+        <div class="instructions">
+            <ol>
+                <li>Créez un middleware pour logger dans la console l'adresse IP de l'utilisateur sur chaque requête.</li>
+            </ol>
+        </div>
     </section>
 
     <section>
         <h3>Gestion des formulaires</h3>
+        <p>Afin de pouvoir récupérer les informations transmises via nos formulaires, nous allons utiliser un middleware basé sur le package <a href="https://www.npmjs.com/package/body-parser" target="_blank">body-parser</a> :</p>
+        <pre><code class="language-js">const bodyParser = require('body-parser');
+
+app.use(bodyParser.json()); // Parser application/json
+app.use(bodyParser.urlencoded({ extended: true })); // Parser application/x-www-form-urlencoded</code></pre>
+        <p>Il sera ensuite possible de récupérer les informations des formulaire via la variable <code class="language-js">req.body</code>.</p>
     </section>
 
     <section>
         <h3>Gestion des formulaires</h3>
-        <p>body-parser</p>
+        <div class="instructions">
+            <ol>
+                <li>Créez un formulaire contenant un titre et un contenu</li>
+                <li>Créez une nouvelle route pour gérer l'envoi du formulaire</li>
+                <li>Affichez dans la console les données envoyées par l'utilisateur</li>
+                <li>Redirigez l'utilisateur vers la page d'accueil</li>
+            </ol>
+        </div>
+    </section>
+
+    <section>
+        <h3>Gestion des formulaires</h3>
+        <p>Nous allons maintenant mettre à jour notre formulaire pour permettre à l'internaute <strong>d'uploader</strong> une image.</p>
+        <p>Pour cela, nous allons utiliser un middleware basé sur le package <a href="https://www.npmjs.com/package/multer" target="_blank">multer</a> : </p>
+        <pre><code class="language-js">const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: 'public/uploads/',
+    filename: (req, file, cb) => {
+        console.log(file)
+        fileinfo = path.parse(file.originalname);
+        cb(null, fileinfo.name + '-' + Date.now() + fileinfo.ext);
+    }
+});
+const upload = multer({ storage: storage }); // Parser multipart/form-data
+
+app.post('/question', upload.single('image'), (req, res) => {</code></pre>
+        <footer>
+            <a href="#" class="warning">N'oubliez pas d'ajouter l'attribut enctype dans le formulaire</a>
+        </footer>
     </section>
 
     <section>
         <h3>La variable locals</h3>
+        <p>Il existe deux variables <code class="language-js">app.locals</code> et <code class="language-js">res.locals</code> permettant respectivement de gérer des variables au niveau de l'application ou bien spécifiquement pour chaque réponses.</p>
+        <p>Ces variables sont accessibles dans les vues Pug.</p>
+        <div class="instructions">
+            <ol>
+                <li>Définissez un objet comme variable d'application</li>
+                <li>Ajoutez une propriété contenant le nom du site</li>
+                <li>Ajoutez une propriété contenant la version du site</li>
+                <li>Récupérez ces données en utilisant la variable <code class="language-js">process.env</code></li>
+            </ol>
+        </div>
     </section>
 
     <section>
         <h3>Les sessions</h3>
+        <p>Pour gérer les sessions de notre application, nous allons utiliser le package <a href="https://www.npmjs.com/package/express-session" target="_blank">express-session</a></p>
+        <p>Utiliser ensuite ce middleware :</p>
+        <pre><code class="language-js">const session = require('express-session');
+app.use(session({
+  secret: 'changethis',
+  resave: false,
+  saveUninitialized: true
+}));</code></pre>
+        <p>Vous pouvez ensuite accéder aux variables de session en utilisant <code class="language-js">req.session</code></p>
+        <footer>
+            <a href="#" class="warning" style="font-size: 0.8em;">En production, il est préférable de stocker les sessions en base de données</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Les sessions</h3>
+        <div class="instructions">
+            <ol>
+                <li>Créez un nouveau fichier middlewares/errors.js</li>
+                <li>Dans ce middleware, ajoutez une fonction <strong>errors</strong> sur l'objet <code class="language-js">req</code></li>
+                <li>Cette fonction <strong>errors</strong> devra ajouter en session les erreurs à afficher</li>
+                <li>Affichez ensuite ces erreurs dans le fichier layout.pug</li>
+            </ol>
+        </div>
     </section>
 
 </section>
