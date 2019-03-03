@@ -1,0 +1,360 @@
+<section id="testing">
+
+    <section>
+        <h2>Tester son application</h2>
+    </section>
+
+    <section>
+        <h3>Niveaux de test</h3>
+        <ol>
+            <li><strong>Tests unitaires</strong> (unit tests) : Tester des functionnalités individuellement</li>
+            <li><strong>Tests d'intégration</strong> (integration tests) : Tester des fonctionnalités dans leur ensemble</li>
+            <li><strong>Tests système</strong> (system tests) : Tester l'ensemble du système</li>
+            <li><strong>Tests d'acceptation</strong> (operational acceptance tests) : Tester le produit final en suivant des cahiers de recette</li>
+        </ol>
+    </section>
+
+    <section>
+        <h3>Niveaux de test</h3>
+        <img src="/assets/images/testing.png" alt="Testing">
+    </section>
+
+    <section>
+        <h3>Techniques de conception</h3>
+        <ol>
+            <li><strong>Boîte blanche</strong> (white box) : Tester la structure interne d'une application. Nécessite des connaissances en programmation. (Tests unitaires / d'intégration)</li>
+            <li><strong>Boîte noire</strong> (black box) : Tester les fonctionnalités d'une application. Ne nécessite pas de connaissances en programmation. (Tests système / d'acceptation)</li>
+        </ol>
+    </section>
+
+    <section>
+        <h3>Intégration continue</h3>
+        <p>Technique permettant de vérifier <strong>régulièrement</strong> que les modifications réalisées dans le code source n'entraîne pas de <strong>regressions</strong>.</p>
+        <img src="/assets/images/ci.png" alt="CI">
+    </section>
+
+    <section>
+        <h3>Intégration continue</h3>
+        <div class="container">
+            <div class="col">
+                <img src="/assets/images/jenkins.jpeg" alt="Jenkins">
+            </div>
+            <div class="col">
+                <img src="/assets/images/travisci.png" alt="Travis CI">
+            </div>
+            <div class="col">
+                <img src="/assets/images/circleci.png" alt="Circle CI">
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>BDD</h3>
+        <blockquote>
+            <p>Le behavior-driven development (ou BDD) met en avant le langage naturel et les interactions dans le processus de développement logiciel. Les développeurs utilisant le BDD utilisent un langage naturel en combinaison avec le langage du domaine pour décrire l'objectif et le bénéfice de leur code.</p>
+            <cite>- Wikipedia</cite>
+        </blockquote>
+    </section>
+
+    <section>
+        <h3>TDD</h3>
+        <blockquote>
+            <p>Le Test-Driven Development (TDD), ou développements pilotés par les tests en français, est une méthode de développement de logiciel qui consiste à écrire chaque test avant d'écrire le code source d'un logiciel, de façon itérative.</p>
+            <cite>- Wikipedia</cite>
+        </blockquote>
+    </section>
+
+    <section>
+        <h3>Mocha</h3>
+        <div class="container">
+            <div class="col">
+                <p>Mocha est un framework JavaScript de tests pour Node.js</p>
+                <p>Ce framework n'impose pas l'utilisation d'une librairie d'assertion particulière et il est donc possible de choisir celle de son choix.</p>
+            </div>
+            <div class="col">
+                <img src="/assets/images/mocha.svg" alt="Mocha">
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Installation</h3>
+        <p>Il est possible d'installer Mocha de façon globale :</p>
+        <pre><code class="language-bash">npm install -g mocha</code></pre>
+        <p>Ou dans le projet en cours :</p>
+        <pre><code class="language-bash">npm install --save-dev mocha</code></pre>
+    </section>
+
+    <section>
+        <h3>Interfaces</h3>
+        <p>Mocha propose plusieurs interfaces pour décrire les tests.</p>
+        <p>Pour la suite, nous utiliserons l'interface BDD qui est celle utilisée dans la documentation.</p>
+        <footer>
+            <a href="https://mochajs.org/#interfaces" class="info" target="_blank">Interfaces</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Notre premier test</h3>
+        <p><code class="language-js">describe()</code> permet de décrire la fonctionnalité qui va être testée.</p>
+        <p><code class="language-js">it()</code> permet de décrire un test de la fonctionnalité.</p>
+        <pre><code class="language-js">// test/helloworld.spec.js
+describe('Test Mocha framework', () => {
+
+  it('should pass the test', () => {
+
+  })
+
+});</code></pre>
+        <footer>
+            <a href="https://mochajs.org/#the-test-directory" class="info" target="_blank">
+                Par défaut Mocha va rechercher les tests dans le dossier "test"
+            </a>
+            <a href="https://mochajs.org/#arrow-functions" class="warning" style="font-size: 0.9em" target="_blank">
+                Dans certains cas, il est déconseillé d'utiliser les fonctions fléchées
+            </a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Notre premier test</h3>
+        <p>Pour exécuter notre test :</p>
+        <pre><code class="language-bash">mocha tests/</code></pre>
+        <pre><code>  Test de mocha
+    ✓ should pass the test
+</code></pre>
+        <footer>
+            <a href="https://mochajs.org/#reporters" class="info" target="_blank">
+                Vous pouvez changer de Reporter pour modifier
+            </a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Assert</h3>
+        <p>Mocha n'inclue pas de librairie pour effectuer les assertions.</p>
+        <p>Nous pouvons dans un premier temps utiliser la librairie <code>assert</code> de Node.js :</p>
+        <pre><code class="language-js">const assert = require('assert');
+
+describe('Test de mocha', () => {
+
+  it('should pass the test', () => {
+    assert.strictEqual(2, 3, 'Values are not equal!');
+  })
+
+});</code></pre>
+        <pre><code>  1) Test de mocha
+       should pass the test:
+
+      AssertionError [ERR_ASSERTION]: Values are not equal!
+      + expected - actual
+
+      -2
+      +3
+</code></pre>
+    </section>
+
+    <section>
+        <h3>Tester une fonction de notre code source</h3>
+        <p>Nous allons maintenant créer une librairie pour nous permettre d'effectuer des conversions de températures :</p>
+        <pre style="max-height: 400px"><code class="language-js">// converter.js
+module.exports = {
+  temperature: (temp, from, to) => {
+    let result = null;
+    if (from === to) {
+      result = temp;
+    } else if (from === "c") {
+      if (to === "f") {
+        result =  (temp * 9/5) + 32;
+      } else {
+        result =  temp + 273.15;
+      }
+    } else if (from === "f") {
+      if (to === "c") {
+        result =  (temp - 32) * 5/9;
+      } else {
+        result =  (temp - 32) * 5/9 + 273.15;
+      }
+    } else {
+      if (to === "c") {
+        result =  temp - 273.15;
+      } else {
+        result =  (temp - 273.15) * 9/5 + 32;
+      }
+    }
+    return Number(result.toFixed(2));
+  }
+};</code></pre>
+    </section>
+
+    <section>
+        <h3>Tester une fonction de notre code source</h3>
+        <p>Nous allons maintenant écrire les tests.</p>
+        <p>Ici, nous allons ajouter un <code class="language-js">describe()</code> pour identifier la fonction testée.</p>
+        <p>Nous allons également tester plusieurs cas possibles.</p>
+        <pre style="max-height: 400px"><code class="language-js">// test/converter.spec.js
+const assert = require('assert');
+const converter = require('../converter.js');
+
+describe('Test converter', () => {
+
+  describe('#temperature', () => {
+
+    it('should convert the temperature', () => {
+      assert.strictEqual(converter.temperature(5, "c", "f"), 41, 'Celsius to Fahrenheit conversion failed!');
+      assert.strictEqual(converter.temperature(5, "f", "c"), -15, 'Fahrenheit to Celsius conversion failed!');
+      assert.strictEqual(converter.temperature(-5, "k", "f"), -468.67, 'Kelvin to Fahrenheit conversion with negative temperature failed!');
+    });
+
+    it('should return the same value', () => {
+      assert.strictEqual(converter.temperature(5, "f", "f"), 5, 'Same measuring unit failed!');
+    });
+
+  });
+
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Tester une fonction de notre code source</h3>
+        <div class="instructions">
+            <ol>
+                <li>Ecrire les tests pour la fonction <code class="language-js">distance()</code> qui permettra de convertir des kilomètres en miles.</li>
+                <li>Créer la fonction dans le fichier converter.js</li>
+                <li>Exécutez les tests.</li>
+            </ol>
+        </div>
+    </section>
+
+    <section>
+        <h3>Code asynchrone</h3>
+        <p>Certain tests peuvent faire appel à du code asynchrone (appel en base de données, api, écriture de fichier...).</p>
+        <p>Nous allons créer un convertisseur d'unités monétaires basée sur une API :</p>
+        <pre><code class="language-js">currencies: (amount, from, to, callback) => {
+    request(`https://api.exchangeratesapi.io/latest?base=${from}&symbols=${to}`, (err, response, body) => {
+      const data = JSON.parse(body);
+      callback(data.rates[to] * amount);
+    });
+  }</code></pre>
+    </section>
+
+    <section>
+        <h3>Code asynchrone</h3>
+        <p>Nous allons maintenant utiliser la fonction <code class="language-js">done()</code> pour indiquer à Mocha à quel moment le test se termine :</p>
+        <pre><code class="language-js">  describe('#currencie', () => {
+
+    it('should convert currencies', (done) => {
+      converter.currencies(5, "EUR", "USD", (value) => {
+        assert.strictEqual(value, 5.69, 'Euro to Dollars conversion failed!');
+        done();
+      });
+    });
+
+  });</code></pre>
+        <footer>
+            <a href="#" class="warning">Sans la fonction done(), ce test passerait dans tous les cas</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Hooks</h3>
+        <p>Les hooks permettent d'exécuter du code avant ou après l'exécution d'un ou plusieurs tests.</p>
+        <p>Ils peuvent être utiles pour par exemple tester des fonctionnalités liées à une base de données :</p>
+        <pre style="max-height: 400px"><code class="language-js">// test/user.spec.js
+const MongoClient = require('mongodb').MongoClient;
+const Server = require('mongodb').Server;
+const client = new MongoClient(new Server('localhost', 27017), { useNewUrlParser: true });
+let db = null;
+
+describe('Test User', () => {
+
+  before(done => {
+    client.connect(err => {
+      db = client.db('myapptest');
+      done();
+    });
+  });
+
+  it('should create a new user', done => {
+    db.collection('users').insertOne({username: 'johndoe', password: '1234'}, done);
+  });
+
+  after(done => {
+    db.dropDatabase(err => {
+      client.close(done);
+    });
+  });
+
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Tests en attente</h3>
+        <p>Vous pouvez également commencer à préparer vos tests sans les implémenter :</p>
+        <pre><code class="language-js">it('should be implemented later...')</code></pre>
+        <p>Ou encore :</p>
+        <pre><code class="language-js">it.skip('should be working later...', () => {
+  assert.strictEqual();
+  assert.strictEqual();
+})</code></pre>
+    </section>
+
+    <section>
+        <h3>Librairies d'assertion</h3>
+        <p>Mocha permet de choisir la librairie d'assertion que l'on souhaite utiliser.</p>
+        <p>La librairie <a href="https://shouldjs.github.io/" target="_blank">should.js</a> permet par exemple d'écrire des tests en utilisant cette syntaxe :</p>
+        <pre><code class="language-js">user.should.have.property('username');</code></pre>
+        <p>Tandis que la librairie <a href="https://www.chaijs.com/" target="_blank">Chai</a> propose 3 types d'écritures (Should, Expect et Assert) :</p>
+        <pre><code class="language-js">user.should.have.property('username'); // Should syntax
+expect(user).to.have.property('username'); // Expect syntax
+assert.property(user, 'username'); // Assert syntax</code></pre>
+    </section>
+
+    <section>
+        <h3>Sinon.js</h3>
+        <div class="container">
+            <div class="col">
+                <p>
+                    Malheureusement, dans une application, les fonctions développées ne sont pas toujours aussi simples.
+                    Elles peuvent faire appel à d'autres fonctions, librairies ou à des APIs externes.
+                </p>
+                <p><a href="https://sinonjs.org/" target="_blank">Sinon.js</a> est une librairie permettant d'effectuer des tests plus poussés sur nos fonctions et leurs comportements internes.</p>
+            </div>
+            <div class="col">
+                <img src="/assets/images/sinon.png" alt="SinonJS">
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Sinon.js - Spies</h3>
+        <p>Un spy (espion) permet d'analyser une fonction afin de savoir si elle a été appelée, avec quels arguments, sa valeur de retour...</p>
+        <pre><code class="language-js">const callback = sinon.spy();
+converter.currencies(5, "EUR", "USD", callback);
+assert.ok(callback.called)</code></pre>
+        <p>Il est également possible de créer un spy sur une méthode existante :</p>
+        <pre><code class="language-js">sinon.spy(jQuery, "ajax");
+assert.ok(jQuery.ajax.calledOnce);</code></pre>
+    </section>
+
+    <section>
+        <h3>Sinon.js - Stubs</h3>
+        <p>Les stubs permettent de retirer les dépendances aux systèmes externes tels que les APIs.</p>
+        <p>Ils sont similaires aux spies mais permettent également de définir la valeur de retour de la fonction.</p>
+        <pre><code class="language-js">const stub = sinon.stub(converter.currencies);
+stub.return(() => setTimeout(() => 5, 200));</code></pre>
+    </section>
+
+    <section>
+        <h3>Sinon.js - Mock</h3>
+        <p>Les mocks sont similaires aux stubs mais permettent également de définir le comportement de la fonction.</p>
+        <pre><code class="language-js">const mock = sinon.mock(converter.currencies);
+mock.expects('request').once();
+converter.currencies(5, "EUR", "USD", (value) => {
+  assert.strictEqual(value, 5.69, 'Euro to Dollars conversion failed!');
+  mock.verify();
+  done();
+});</code></pre>
+    </section>
+
+</section>
