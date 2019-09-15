@@ -170,13 +170,24 @@ module.exports = class Hello {
         console.log(`Hello ${this.name}`);
     }
 }
-
-// app.js
+</code></pre>
+        <pre class="line-numbers"><code class="language-js">// app.js
 const Hello = require('./hello.js');
 
 let hello = new Hello('John');
 hello.say();
 </code></pre>
+    </section>
+
+    <section>
+        <h3>Modules</h3>
+        <p>Il est cependant possible depuis la version 8.9.0 de NodeJS d'activer l'importation de module. Pour cela il faut :</p>
+        <ul>
+            <li>Nommer les modules avec l'extension .mjs</li>
+            <li>Utiliser le flag <code class="language-js">--experimental-modules</code> dans la commande node</li>
+        </ul>
+        <hr>
+        <p>Une autre solution est d'utiliser le package <a href="https://www.npmjs.com/package/esm">esm</a>.</p>
     </section>
 
     <section>

@@ -1,0 +1,238 @@
+<section id="jwt">
+
+    <section>
+        <h2>JWT</h2>
+    </section>
+
+    <section>
+        <h3>JWT</h3>
+        <p>JWT (JSON Web Token) est un standard open source permettant d'échanger des données certifiées entre le client et le serveur.</p>
+        <p>Les tokens JWT sont composés de 3 parties :</p>
+        <ol>
+            <li><strong>Header</strong> : Décrit l'algorithme de chiffrement et le type de token (encodé en Base64)</li>
+            <li><strong>Payload</strong> : Contient les données (encodé en Base64)</li>
+            <li><strong>Verify Signature</strong> : Utilise l'algorithme défini dans le header pour générer une chaine de caractères à partir du payload et d'une clé secrète.</li>
+        </ol>
+        <footer>
+            <a href="https://jwt.io" class="info" target="_blank">Documentation JWT</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>JWT</h3>
+        <img src="/assets/images/jwt-diagram.jpg" alt="JWT">
+    </section>
+
+    <section>
+        <h3>Inconvénients</h3>
+        <ul>
+            <li>Toute la sécurité repose sur une clé qui ne doit surtout pas être communiquée.</li>
+            <li>Il n'est pas possible d'invalider un token JWT. Si un utilisateur supprime son compte, il pourra donc toujours se connecter pendant un certain temps.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>JWT Passport</h3>
+        <p>Nous allons maintenant créer un nouveau projet et implémenter un système d'authentification utilisant JWT.</p>
+        <p>Nous allons dans un premier temps créer un nouveau projet en utilisant Express Generator :</p>
+        <pre><code class="language-shell">express --no-view server-jwt
+cd server-jwt
+npm install</code></pre>
+    </section>
+
+    <section>
+        <h3>Configuration de MongoDB</h3>
+        <p>Nous allons commencer par créer une connexion à MongoDB et utiliser Mongoose pour créer un model User.</p>
+        <pre><code class="language-shell">npm install mongoose bcrypt</code></pre>
+        <footer>
+            <a href="#" class="info">Nous utiliserons bcrypt pour sécuriser nos mots de passe</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Connection à la base de données</h3>
+        <p>Nous allons modifier le fichier app.js pour créer la connexion à la base de données :</p>
+        <pre><code class="language-js">// app.js
+const mongoose = require('mongoose');
+
+[...]
+
+mongoose.connect('mongodb://127.0.0.1:27017/serverjwt', { useNewUrlParser: true });
+mongoose.connection.on('error', error => console.log(error));</code></pre>
+    </section>
+
+    <section>
+        <h3>Création du model User</h3>
+        <p>Nous allons maintenant utiliser Mongoose pour créer un model User :</p>
+        <pre><code class="language-js">// model/User.js
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const UserSchema = new Schema({
+  email : {
+    type : String,
+    required : true,
+    unique : true
+  },
+  password : {
+    type : String,
+    required : true
+  }
+});
+
+const UserModel = mongoose.model('user',UserSchema);
+
+module.exports = UserModel;</code></pre>
+    </section>
+
+    <section>
+        <h3>User hook</h3>
+        <p>Nous allons également ajouter un hook pour crypter le mot de passe de l'utilisateur :</p>
+        <pre><code class="language-js">// model/User.js
+const bcrypt = require('bcrypt');
+
+[...]
+
+UserSchema.pre('save', function(next) {
+  bcrypt.hash(this.password, 10, (err, hash) => {
+    this.password = hash;
+    next();
+  });
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>User method</h3>
+        <p>Nous allons ajouter une méthode pour valider le mot de passe :</p>
+        <pre><code class="language-js">UserSchema.methods.isValidPassword = function(password, done) {
+  bcrypt.compare(password, this.password, (err, isEqual) => done(isEqual));
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Authentification</h3>
+        <p>Nous allons à présent gérer la partie authentification de notre application.</p>
+        <p>Pour cela, nous allons utiliser les modules passport et passport-jwt :</p>
+        <pre><code class="language-shell">npm install passport passport-local passport-jwt</code></pre>
+    </section>
+
+    <section>
+        <h3>Authentification</h3>
+        <p>Nous allons maintenant indiquer à passport d'utiliser la stratégie JWT.</p>
+        <p>Nous allons également indiquer que nous souhaitons stocker le token JWT dans les headers de nos requêtes HTTP :</p>
+        <pre><code class="language-js">// auth/auth.js
+const passport = require('passport');
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+
+passport.use(new JwtStrategy({
+  secretOrKey : 'top_secret',
+  jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken()
+}, (jwt_payload, done) => {
+  return done(null, jwt_payload.user);
+}));</code></pre>
+        <p>Le token sera stocké dans les headers de cette façon :</p>
+        <p><strong>Authorization: Bearer &lt;token&gt;</strong></p>
+    </section>
+
+    <section>
+        <h3>Authentification</h3>
+        <p>Nous pouvons maintenant créer des middlewares pour la création de compte et le login :</p>
+        <pre style="max-height: 400px;"><code class="language-js">// auth/auth.js
+const LocalStrategy = require('passport-local').Strategy;
+const UserModel = require('../model/User');
+
+passport.use('signup', new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+}, (email, password, done) => {
+  UserModel.create({ email, password }, (err, user) => done(err, user));
+}));
+
+passport.use('login', new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+}, (email, password, done) => {
+  UserModel.findOne({ email }, (err, user) => {
+    if(!user){
+      return done(null, false, { message : 'User not found'});
+    }
+    user.isValidPassword(password, isValid => {
+      if(!isValid){
+        return done(null, false, { message : 'Wrong Password'});
+      }
+      return done(null, user, { message : 'Logged in Successfully'});
+    });
+  });
+}));
+</code></pre>
+    </section>
+
+    <section>
+        <h3>Authentification</h3>
+        <p>Nous allons maintenant créer les routes pour permettre de créer un compte et se logger :</p>
+        <pre style="max-height: 400px;"><code class="language-js">// routes/users.js
+const express = require('express');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const router = express.Router();
+
+router.post('/signup', passport.authenticate('signup', { session : false }) , (req, res, next) => {
+  res.json({ message : 'Signup successful', user : req.user });
+});
+
+router.post('/login', (req, res, next) => {
+  passport.authenticate('login', (err, user, info) => {
+    if(err) return next(err);
+    if(!user) {
+      const error = new Error(info.message);
+      return next(error);
+    }
+    req.login(user, { session : false }, err => {
+      if(err) return next(err);
+      const body = { _id: user._id, email: user.email };
+      const token = jwt.sign({ user : body }, 'top_secret');
+      return res.json({ token });
+    });
+  })(req, res, next);
+});
+
+module.exports = router;</code></pre>
+    </section>
+
+    <section>
+        <h3>Authentification</h3>
+        <p>Nous allons également ajouter une route sécurisée accessible uniquement si l'utilisateur est authentifié :</p>
+        <pre><code class="language-js">// routes/users.js
+
+router.get('/profile', passport.authenticate('jwt', { session : false }), (req, res, next) => {
+  res.json({
+    message : 'You made it to the secure route',
+    user : req.user,
+    token : req.query.secret_token
+  })
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Authentification</h3>
+        <p>Pour terminé, nous allons modifier le fichier app.js pour activer notre authentification :</p>
+        <pre><code class="language-js">// app.js
+const passport = require('passport');
+
+[...]
+
+require('./auth/auth');
+app.use(passport.initialize());</code></pre>
+    </section>
+
+    <section>
+        <h3>Authentification</h3>
+        <p>Nous pouvons maintenant tester notre système d'authentification :</p>
+        <pre><code class="language-shell">curl -X GET http://localhost:3000/users/profile
+curl -H "Content-type: application/json" -d '{ "email": "pierre.jehan@gmail.com", "password": "1234" }' -X POST http://localhost:3000/users/signup
+curl -H "Content-type: application/json" -d '{ "email": "pierre.jehan@gmail.com", "password": "1234" }' -X POST http://localhost:3000/users/login
+curl -H "Authorization: Bearer &lt;token&gt;" -X GET http://localhost:3000/users/profile</code></pre>
+    </section>
+
+</section>
