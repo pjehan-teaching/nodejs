@@ -218,7 +218,7 @@ const storage = multer.diskStorage({
     destination: 'public/uploads/',
     filename: (req, file, cb) => {
         console.log(file)
-        fileinfo = path.parse(file.originalname);
+        const fileinfo = path.parse(file.originalname);
         cb(null, fileinfo.name + '-' + Date.now() + fileinfo.ext);
     }
 });
