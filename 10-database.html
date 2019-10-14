@@ -8,19 +8,34 @@
         <h3>Driver NodeJS</h3>
         <p>Pour utiliser une base de données dans notre application, nous allons commencer par installer un driver.</p>
         <p>Dans notre cas, nous allons utiliser un driver MongoDB : <a href="https://www.npmjs.com/package/mongodb" target="_blank">mongodb</a></p>
-        <pre><code class="language-js">const MongoClient = require('mongodb').MongoClient;
+        <pre><code class="language-js">// bin/www
+const MongoClient = require('mongodb').MongoClient;
 
-const url = 'mongodb://localhost:27017';
-const dbName = 'socialquiz';
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(client => {
+    app.locals.db = client.db('mydb'); // Enregistrement de la connexion dans les variables locales
+    server.listen(port); // Démarrer le serveur une fois la connexion ouverte
+  })
+  .catch(err => console.log(err))
+;
 
-MongoClient.connect(url, function (err, client) {
-    if (err) throw err;
-    var db = client.db(dbName);
+server.on('error', onError);
+server.on('listening', onListening);</code></pre>
+    </section>
 
-    db.collection('questions').insertOne({ title: 'test', content: 'Lorem ipsum'}, (err, result) => {
-        client.close();
-    });
+    <section>
+        <h3>Driver NodeJS</h3>
+        <p>Nous pouvons alors utiliser la connexion à la base de données dans nos routes :</p>
+        <pre><code class="language-js">router.get('/', function(req, res, next) {
+  const { db } = req.app.locals;
+  db.collection('users').find().toArray((err, users) => res.json(users));
 });</code></pre>
+        <footer>
+            <a href="https://mongodb.github.io/node-mongodb-native/" class="info" target="_blank">Documentation driver MongoDB pour NodeJS</a>
+        </footer>
     </section>
 
     <section>
@@ -61,6 +76,15 @@ question.save((err, question) => {
     if (err) throw err;
     res.redirect('/');
 });</code></pre>
+    </section>
+
+    <section>
+        <h3>Mongoose</h3>
+        <p>L'ORM Mongoose propose une méthode <code class="language-js">populate()</code> qui permet d'effectuer des jointures entre les collections plus facilement qu'avec l'aggregation <code class="language-js">$lookup</code> :</p>
+        <pre><code class="language-js">Question.findOne({ title: 'test' }).populate('user').exec((err, question) => res.json(question))</code></pre>
+        <footer>
+            <a href="https://mongoosejs.com/docs/populate.html" class="info" target="_blank">Populate documentation</a>
+        </footer>
     </section>
 
     <section>
