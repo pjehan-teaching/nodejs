@@ -77,3 +77,5 @@ const prismjsDebugger = {
   }
 
 };
+
+export default prismjsDebugger;

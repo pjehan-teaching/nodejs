@@ -1,4 +1,6 @@
-.reveal .prismjs-debugger {
+.reveal {
+
+  .prismjs-debugger {
     display: flex;
     z-index: 1;
     position: absolute;
@@ -6,29 +8,31 @@
     right: 0;
     padding: 0.2em;
     background-color: white;
-}
+  }
 
-.reveal .prismjs-debugger button {
+  .prismjs-debugger button {
     margin: 0 5px;
-}
+  }
 
-.reveal .prismjs-pointer {
+  .prismjs-pointer {
     position: absolute;
     top: 0;
     left: 0;
     margin-top: 1em;
     transition: top 1s ease 0s;
-}
+  }
 
-.reveal .prismjs-console {
+  .prismjs-console {
     position: absolute;
     bottom: 0;
     right: 0;
     min-width: 30%;
     background-color: white;
     color: black;
-}
+  }
 
-.reveal .prismjs-console .prismjs-console-msg {
+  .prismjs-console .prismjs-console-msg {
     margin: 0 0.5em;
+  }
+
 }
