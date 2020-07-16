@@ -7,12 +7,15 @@
     <section>
         <h3>Passport</h3>
         <p>Pour gérer l'authentification des utilisateurs, nous allons utiliser le module <a href="https://www.npmjs.com/package/passport" target="_blank">passport</a>.</p>
-        <pre><code class="language-bash">npm install --save passport passport-local passport-local-mongoose</code></pre>
+        <pre><code class="language-bash">npm install --save express-session mongoose passport passport-local passport-local-mongoose</code></pre>
         <pre><code class="language-js">const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 app.use(passport.initialize());
 app.use(passport.session());</code></pre>
+        <footer>
+            <a href="#" class="info">express-session et mongoose doivent être déjà installés</a>
+        </footer>
     </section>
 
     <section>
