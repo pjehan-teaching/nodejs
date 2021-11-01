@@ -1,0 +1,193 @@
+<section id="mysql">
+
+    <section>
+        <h2>Base de données (MySQL)</h2>
+    </section>
+
+    <section>
+        <h3>Driver NodeJS</h3>
+        <p>Pour utiliser une base de données dans notre application, nous allons commencer par installer un driver.</p>
+        <p>Dans notre cas, nous allons utiliser un driver MySQL : <a href="https://www.npmjs.com/package/mysql2" target="_blank">mysql2</a></p>
+        <pre><code class="language-js">// bin/www
+const mysql = require('mysql2');
+
+const connection = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  password: 'root',
+  database: 'mydb',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
+app.locals.db = connection;</code></pre>
+    </section>
+
+    <section>
+        <h3>Driver NodeJS</h3>
+        <p>Nous pouvons alors utiliser la connexion à la base de données dans nos routes :</p>
+        <pre><code class="language-js">router.get('/', function(req, res, next) {
+  const { db } = req.app.locals;
+  db.query('SELECT * FROM user', function(err, users) {
+    if (err) throw err;
+    res.json(users);
+  });
+});</code></pre>
+        <footer>
+            <a href="https://github.com/mysqljs/mysql#readme" class="info" target="_blank">Documentation driver MySQL pour NodeJS</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Sequelize Connexion</h3>
+        <p>Sequelize est un ORM pour NodeJS. Il va nous permettre d'utiliser la syntaxe objet pour manipuler nos données.</p>
+        <p>Installez le package <a href="https://www.npmjs.com/package/sequelize" target="_blank">sequelize</a> puis ouvrez une connection :</p>
+        <pre><code class="language-js">const { Sequelize } = require('sequelize');
+
+const sequelize = new Sequelize('mydb', 'root', 'root', {
+  host: 'localhost',
+  dialect: 'mysql'
+});
+</code></pre>
+    </section>
+
+    <section>
+        <h3>Sequelize Model</h3>
+        <p>Dans un premier temps, nous allons créer un modèle qui représentera une table de notre base de données :</p>
+        <pre style="max-height: 50vh;"><code class="language-js">// models/user.js
+const Sequelize = require('sequelize');
+
+class user extends Sequelize.Model {
+  static init(sequelize, DataTypes) {
+    super.init({
+      id: {
+        autoIncrement: true,
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true
+      },
+      firstname: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      lastname: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false
+      }
+    }, {
+      sequelize,
+      tableName: 'user',
+    });
+
+    return user;
+  }
+}
+
+module.exports = (sequelize, DataTypes) => {
+  return user.init(sequelize, DataTypes);
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Sequelize Model</h3>
+        <p>Ensuite, nous allons créer un fichier qui sera chargé d'initalisé nos modèles :</p>
+        <pre><code class="language-js">// models/init-models.js
+const DataTypes = require("sequelize").DataTypes;
+const _user = require("./user");
+
+function initModels(sequelize) {
+  const user = _user(sequelize, DataTypes);
+
+  // You can add associations here:
+  // user.hasMany(post, { as: "posts", foreignKey: "user_id"});
+
+  return {
+    user,
+  };
+}
+
+module.exports = initModels;</code></pre>
+    </section>
+
+    <section>
+        <h3>Sequelize Model</h3>
+        <p>Enfin, nous allons ouvrir la connexion à la base de données via Sequelize dans le fichier bin/www :</p>
+        <pre><code class="language-js">// bin/www
+const { Sequelize } = require('sequelize');
+const models = require('../models/init-models');
+
+const sequelize = new Sequelize('test', 'root', 'root', {
+  host: 'localhost',
+  dialect: 'mysql'
+});
+
+sequelize.authenticate()
+  .then(() => {
+    const db = models(sequelize);
+    sequelize.sync({ force: true }) // force: true to drop table before create
+    .then(() => {
+      app.locals.db = db;
+    })
+  })
+  .catch(err => console.error('Unable to connect to the database:', err))
+;</code></pre>
+    </section>
+
+    <section>
+        <h3>Sequelize Auto</h3>
+        <p>Vous pouvez également générer les models à partir d'une base de données existante :</p>
+        <pre><code class="language-shell">npm i --dev sequelize-auto
+node_modules/.bin/sequelize-auto -o "./models" -d mydb -h localhost -u root -p 3306 -x root -e mysql -l es6</code></pre>
+    </section>
+
+    <section>
+        <h3>Sequelize CRUD</h3>
+        <p>Vous pouvez ensuite enregistrer les données en base de données de cette façon :</p>
+        <pre><code class="language-js">const { db } = req.app.locals;
+db.user.create({
+  firstname: 'John',
+  lastname: 'Doe',
+  email: 'john.doe@gmail.com',
+  password: '1234'
+})
+.then(user => console.log(user));</code></pre>
+    </section>
+
+    <section>
+        <h3>Sequelize CRUD</h3>
+        <p>Rechercher des données en base de données :</p>
+        <pre><code class="language-js">const { db } = req.app.locals;
+db.user.findAll().then(function(users) {
+  res.render('users', { users: users });
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Sequelize CRUD</h3>
+        <p>Modifier des données en base de données :</p>
+        <pre><code class="language-js">const { db } = req.app.locals;
+db.user.update({ password: '1234' }, { where: { password: null } }).then(function(users) {
+  res.render('users', { users: users });
+});</code></pre>
+    </section>
+
+    <section>
+        <h3>Sequelize CRUD</h3>
+        <p>Supprimer des données en base de données :</p>
+        <pre><code class="language-js">const { db } = req.app.locals;
+db.user.destroy({ where: { password: null } }).then(function(users) {
+  res.render('users', { users: users });
+});</code></pre>
+    </section>
+
+</section>
