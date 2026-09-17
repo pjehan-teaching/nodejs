@@ -1,7 +1,7 @@
 {
   "plugins": [
     ["prismjs", {
-      "languages": ["js", "shell", "apacheconf", "nginx", "pug", "css"],
+      "languages": ["js", "shell", "apacheconf", "nginx", "pug", "css", "json"],
       "plugins": ["line-numbers", "line-highlight"],
       "theme": "tomorrow",
       "css": true
